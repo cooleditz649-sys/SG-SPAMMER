@@ -1,0 +1,316 @@
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+--[[
+    SG SPAMMER | Fixed for Delta
+]]
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TextChatService = game:GetService("TextChatService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- ==================== CONFIG ====================
+local RP_NAME = "SG SPAMMER"
+
+-- ==================== REMOTES ====================
+local function getRemotes()
+    local success, RE = pcall(function()
+        return ReplicatedStorage:WaitForChild("RE", 10)
+    end)
+    if not success or not RE then return nil, nil end
+
+    local nameRemote = RE:FindFirstChild("1RPNam1eTex1t")
+    local colorRemote = RE:FindFirstChild("1RPNam1eColo1r")
+    return nameRemote, colorRemote
+end
+
+local NameRemote, ColorRemote = getRemotes()
+
+-- Set Name (multiple times for safety)
+task.spawn(function()
+    if NameRemote then
+        for i = 1, 5 do
+            pcall(function()
+                NameRemote:FireServer("RolePlayName", RP_NAME)
+            end)
+            task.wait(0.4)
+        end
+    end
+end)
+
+-- Red Color Setter
+task.spawn(function()
+    if not ColorRemote then return end
+    local redColor = Color3.fromRGB(255, 0, 0)
+    for i = 1, 5 do
+        pcall(function()
+            ColorRemote:FireServer("PickingRPNameColor", redColor)
+            ColorRemote:FireServer("PickingRPBioColor", redColor)
+        end)
+        task.wait(0.4)
+    end
+end)
+
+-- ==================== CHAT FUNCTION ====================
+local function sendChat(msg)
+    -- New TextChatService (preferred)
+    local success = pcall(function()
+        local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+        if channel then
+            channel:SendAsync(msg)
+            return true
+        end
+    end)
+
+    if success then return end
+
+    -- Old chat fallback
+    pcall(function()
+        local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+        if chatEvents then
+            local say = chatEvents:FindFirstChild("SayMessageRequest")
+            if say then
+                say:FireServer(msg, "All")
+            end
+        end
+    end)
+end
+
+-- ==================== UI ====================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "SGSpammer"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.BackgroundTransparency = 0.15
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.1, 0, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 340, 0, 275)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 16)
+UICorner.Parent = MainFrame
+
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(255, 255, 255)
+UIStroke.Transparency = 0.8
+UIStroke.Thickness = 1.2
+UIStroke.Parent = MainFrame
+
+-- Title
+local TitleBar = Instance.new("Frame")
+TitleBar.Parent = MainFrame
+TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TitleBar.BackgroundTransparency = 0.92
+TitleBar.Size = UDim2.new(1, 0, 0, 46)
+TitleBar.BorderSizePixel = 0
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 16)
+TitleCorner.Parent = TitleBar
+
+local Title = Instance.new("TextLabel")
+Title.Parent = TitleBar
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Size = UDim2.new(1, -15, 1, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "  SG SPAMMER"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 15
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Divider
+local Divider = Instance.new("Frame")
+Divider.Parent = MainFrame
+Divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Divider.BackgroundTransparency = 0.85
+Divider.BorderSizePixel = 0
+Divider.Position = UDim2.new(0.05, 0, 0, 46)
+Divider.Size = UDim2.new(0.9, 0, 0, 1)
+
+-- Target
+local TargetLabel = Instance.new("TextLabel")
+TargetLabel.Parent = MainFrame
+TargetLabel.BackgroundTransparency = 1
+TargetLabel.Position = UDim2.new(0.05, 0, 0, 60)
+TargetLabel.Size = UDim2.new(0.4, 0, 0, 28)
+TargetLabel.Font = Enum.Font.GothamSemibold
+TargetLabel.Text = "Target Clan:"
+TargetLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+TargetLabel.TextSize = 13
+TargetLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local TargetInput = Instance.new("TextBox")
+TargetInput.Parent = MainFrame
+TargetInput.BackgroundColor3 = Color3.fromRGB(40, 40, 48)
+TargetInput.BorderSizePixel = 0
+TargetInput.Position = UDim2.new(0.45, 0, 0, 58)
+TargetInput.Size = UDim2.new(0.5, 0, 0, 32)
+TargetInput.Font = Enum.Font.Gotham
+TargetInput.Text = "R4GE"
+TargetInput.PlaceholderText = "Clan name"
+TargetInput.TextColor3 = Color3.fromRGB(240, 240, 255)
+TargetInput.TextSize = 13
+TargetInput.ClearTextOnFocus = false
+
+local TargetCorner = Instance.new("UICorner")
+TargetCorner.CornerRadius = UDim.new(0, 8)
+TargetCorner.Parent = TargetInput
+
+-- Delay
+local TimerLabel = Instance.new("TextLabel")
+TimerLabel.Parent = MainFrame
+TimerLabel.BackgroundTransparency = 1
+TimerLabel.Position = UDim2.new(0.05, 0, 0, 105)
+TimerLabel.Size = UDim2.new(0.4, 0, 0, 28)
+TimerLabel.Font = Enum.Font.GothamSemibold
+TimerLabel.Text = "Delay (sec):"
+TimerLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
+TimerLabel.TextSize = 13
+TimerLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local TimerInput = Instance.new("TextBox")
+TimerInput.Parent = MainFrame
+TimerInput.BackgroundColor3 = Color3.fromRGB(40, 40, 48)
+TimerInput.BorderSizePixel = 0
+TimerInput.Position = UDim2.new(0.45, 0, 0, 103)
+TimerInput.Size = UDim2.new(0.5, 0, 0, 32)
+TimerInput.Font = Enum.Font.GothamBold
+TimerInput.Text = "3.5"
+TimerInput.PlaceholderText = "3.5"
+TimerInput.TextColor3 = Color3.fromRGB(100, 255, 180)
+TimerInput.TextSize = 13
+TimerInput.ClearTextOnFocus = false
+
+local TimerCorner = Instance.new("UICorner")
+TimerCorner.CornerRadius = UDim.new(0, 8)
+TimerCorner.Parent = TimerInput
+
+-- Status
+local StatusLabel = Instance.new("TextLabel")
+StatusLabel.Parent = MainFrame
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Position = UDim2.new(0, 0, 0, 148)
+StatusLabel.Size = UDim2.new(1, 0, 0, 24)
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.Text = "Status: READY"
+StatusLabel.TextColor3 = Color3.fromRGB(160, 165, 185)
+StatusLabel.TextSize = 12
+
+-- Toggle Button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Parent = MainFrame
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 110)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Position = UDim2.new(0.05, 0, 0, 185)
+ToggleButton.Size = UDim2.new(0.9, 0, 0, 48)
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Text = "START SEQUENCE"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 15
+ToggleButton.AutoButtonColor = false
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 12)
+ToggleCorner.Parent = ToggleButton
+
+-- Minimize Button
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Parent = ScreenGui
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(40, 40, 48)
+MinimizeButton.BorderSizePixel = 0
+MinimizeButton.Position = UDim2.new(0, 12, 0, 55)
+MinimizeButton.Size = UDim2.new(0, 90, 0, 32)
+MinimizeButton.Font = Enum.Font.GothamSemibold
+MinimizeButton.Text = "👑 SG"
+MinimizeButton.TextColor3 = Color3.fromRGB(220, 220, 230)
+MinimizeButton.TextSize = 13
+MinimizeButton.AutoButtonColor = false
+
+local MiniCorner = Instance.new("UICorner")
+MiniCorner.CornerRadius = UDim.new(0, 10)
+MiniCorner.Parent = MinimizeButton
+
+MinimizeButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- ==================== SPAM MESSAGES ====================
+local head = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ "
+local baseList = {
+    "TMKX МЕН VOID SPELL FUN FACT VOID FRAUD GODZILLA HYPER GODLY BEAM",
+    "TMKX MEH NOVA POWER FRAUD FUN FACT GODZILLA WAVE GODZILLA FRAUD DARK POWER",
+    "TMKX MEH POWER VOID SPELL HYPER GODLY BEAM GODLY BEAM POWER POWER POWER",
+    "TMKX MEH POWER WAVE WAVE OC3 GODZILLA V OC3 FUN FACT DARK POWER",
+    "TMKX MEH PARALLEL SPELL GODLY BEAM FRAUD DIMENSION WAVE HYPER SPELL SPELL",
+    "TMKX MEH PARALLEL POWER WAVE VOID WORM VOID DARK POWER SPELL HYPER",
+    "TMKX MEH POWER NOVA VOID WORM OC3 GODLY BEAM GODZILLA GODZILLA VOID WORM GODLY BEAM",
+    "TMKX MEH DIMENSION POWER SPELL DIMENSION WAVE WAVE WAVE HYPER POWER",
+    "TMKX MEH FUN FACT VOID GODZILLA FUN FACT DIMENSION VOID WORM GODLY BEAM PARALLEL NOVA"
+}
+
+local isRunning = false
+
+ToggleButton.MouseButton1Click:Connect(function()
+    if isRunning then
+        isRunning = false
+        ToggleButton.Text = "START SEQUENCE"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 200, 110)
+        StatusLabel.Text = "Status: STOPPED"
+    else
+        isRunning = true
+        ToggleButton.Text = "STOP SEQUENCE"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 55, 55)
+
+        task.spawn(function()
+            while isRunning do
+                local target = TargetInput.Text
+                local prefix = (target ~= "" and target .. " ") or ""
+                local phrase = baseList[math.random(1, #baseList)]
+                local fullMsg = head .. prefix .. phrase
+
+                StatusLabel.Text = "Sending: " .. string.sub(fullMsg, 1, 28) .. "..."
+                sendChat(fullMsg)
+
+                local delay = tonumber(TimerInput.Text) or 3.5
+                task.wait(math.max(delay, 2.5)) -- minimum 2.5 sec safety
+            end
+        end)
+    end
+end)
+
+-- Intro
+task.spawn(function()
+    local intro = Instance.new("ScreenGui")
+    intro.Parent = PlayerGui
+    local frame = Instance.new("Frame")
+    frame.Parent = intro
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    frame.BackgroundTransparency = 0.3
+
+    local text = Instance.new("TextLabel")
+    text.Parent = frame
+    text.Size = UDim2.new(1, 0, 0.3, 0)
+    text.Position = UDim2.new(0, 0, 0.35, 0)
+    text.BackgroundTransparency = 1
+    text.Font = Enum.Font.GothamBold
+    text.TextSize = 32
+    text.TextColor3 = Color3.fromRGB(255, 255, 255)
+    text.Text = "SG SPAMMER"
+
+    task.wait(1.8)
+    intro:Destroy()
+end)
+
+print("✅ SG SPAMMER loaded | Delta Compatible")
